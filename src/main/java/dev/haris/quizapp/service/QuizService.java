@@ -29,7 +29,7 @@ public class QuizService {
         this.questionRepo = questionRepo;
     }
 
-    public ResponseEntity<String> createQuiz(List<Integer> questions) {
+    public ResponseEntity<Quiz> createQuiz(List<Integer> questions) {
         Vector<Integer>[] questionDivision = new Vector[2];
         questionDivision[0] = new Vector<>();
         questionDivision[1] = new Vector<>();
@@ -58,12 +58,12 @@ public class QuizService {
             quiz = new Quiz(questionDivision[0].size(), date.format(formatter), quizQuestions);
             quizRepo.save(quiz);
 
-            return new ResponseEntity<>(status.toString(), HttpStatus.CREATED);
+            return new ResponseEntity<>(quiz, HttpStatus.CREATED);
         }
-        return new ResponseEntity<>("No valid question to add to quiz", HttpStatus.EXPECTATION_FAILED);
+        return new ResponseEntity<>(new Quiz(), HttpStatus.EXPECTATION_FAILED);
     }
 
-    public ResponseEntity<String> createSubjectQuiz(Subject subject, Integer size) {
+    public ResponseEntity<Quiz> createSubjectQuiz(Subject subject, Integer size) {
         List<Question> questions;
         if (subject == null){
             questions = (List<Question>) questionRepo.findAll();
@@ -82,7 +82,7 @@ public class QuizService {
         LocalDate date = LocalDate.now();
         Quiz quiz = new Quiz(quizQuestions.size(), date.format(formatter), quizQuestions);
         quizRepo.save(quiz);
-        return new ResponseEntity<>("Quiz Created Successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>(quiz, HttpStatus.CREATED);
     }
 
     public static List<Integer> generateRandomDistinctNumbers(int max, int count) {
@@ -112,5 +112,16 @@ public class QuizService {
         Optional<Quiz> quiz = quizRepo.findById(id);
 
         return quiz.map(value -> new ResponseEntity<>(value, HttpStatus.FOUND)).orElseGet(() -> new ResponseEntity<>(new Quiz(), HttpStatus.NOT_FOUND));
+    }
+
+    public ResponseEntity<Quiz> getQuizQuestions(int id) {
+        Optional<Quiz> quiz = quizRepo.findById(id);
+
+        return new ResponseEntity<>(quiz.get(), HttpStatus.FOUND);
+    }
+
+    public ResponseEntity<List<Quiz>> gatAllQuizzes() {
+        List<Quiz> quizzes = quizRepo.findAll();
+        return new ResponseEntity<>(quizzes, HttpStatus.FOUND);
     }
 }

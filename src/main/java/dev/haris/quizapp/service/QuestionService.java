@@ -1,6 +1,7 @@
 package dev.haris.quizapp.service;
 
 import dev.haris.quizapp.model.Question;
+import dev.haris.quizapp.model.Quiz;
 import dev.haris.quizapp.repository.QuestionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class QuestionService {
@@ -35,5 +38,17 @@ public class QuestionService {
         }
         questionRepo.save(question);
         return new ResponseEntity<>("Question added Successfully", HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<Question> getQuestionById(int id) {
+        Optional<Question> question = questionRepo.findById(id);
+
+        return question.map(value -> new ResponseEntity<>(value, HttpStatus.FOUND)).orElseGet(() -> new ResponseEntity<>(new Question(), HttpStatus.NOT_FOUND));
+    }
+
+    public ResponseEntity<Set<Quiz>> getQuizzesWithThisQuestion(int id) {
+        Optional<Question> question = questionRepo.findById(id);
+
+        return new ResponseEntity<>(question.get().getQuizzes(), HttpStatus.FOUND);
     }
 }

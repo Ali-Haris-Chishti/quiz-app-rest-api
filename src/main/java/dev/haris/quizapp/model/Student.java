@@ -1,8 +1,6 @@
 package dev.haris.quizapp.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -16,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Student {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     int studentId;
 
     @Column
@@ -33,6 +32,6 @@ public class Student {
 
     @Column
     @NotEmpty(message = "Password can not be empty")
-    @Size(min = 8)
+    @Size(min = 8, max = 20, message = "Password must be 8-20 characters long")
     String password;
 }
